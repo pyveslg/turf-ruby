@@ -34,6 +34,31 @@ module Turf
     raise Error, "coord must be GeoJSON Point or an Array of numbers"
   end
 
+
+  # Unwrap coordinates from a Feature, Geometry Object or an Array
+  # @see https://turfjs.org/docs/#getCoords
+  # @param coords [Array|Geometry|Feature}], GeoJSON Object or an Array of numbers
+  # @return [Array] coordinates
+
+  def get_coords(coords)
+
+    return coords if coords.is_a?(Array)
+
+    # Feature
+    if coords.is_a? Hash
+      coords = deep_symbolize_keys(coords)
+
+      is_feature = coords[:type] == "Feature"
+      if is_feature
+        return coords[:geometry][:coordinates]
+      else
+        return coords[:coordinates]
+      end
+    end
+
+    raise Error, "coords must be GeoJSON Feature, Geometry Object or an Array"
+  end
+
   # Get Geometry from Feature or Geometry Object
   # @see https://turfjs.org/docs/#getGeom
   # @param geojson [Feature|Geometry] GeoJSON Feature or Geometry Object
